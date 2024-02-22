@@ -49,12 +49,16 @@ class Recipe(models.Model):
 
     servings_unit = models.CharField(
         max_length=65,
+        verbose_name='Tipo da porção'
     )
 
-    preparation_steps = models.TextField()
+    preparation_steps = models.TextField(
+        verbose_name='Passo a passo da preparação'
+    )
 
     preparation_steps_is_html = models.BooleanField(
         default=False,
+        verbose_name='O passo a passo é HTML?'
     )
 
     created_at = models.DateTimeField(
@@ -69,10 +73,12 @@ class Recipe(models.Model):
 
     is_published = models.BooleanField(
         default=False,
+        verbose_name='Está publicado?'
     )
 
     cover = models.ImageField(
-        upload_to='recipes/cover/%Y/%m/%d/'
+        upload_to='recipes/cover/%Y/%m/%d/',
+        verbose_name='Imagem da receita'
     )
 
     category = models.ForeignKey(
