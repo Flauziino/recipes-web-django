@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_list_or_404, get_object_or_404
 from . import models
 
 
@@ -22,15 +22,19 @@ def index(request):
 
 def category(request, category_id):
 
-    receitas = (
+    receitas = get_list_or_404(
         models.Recipe.objects.filter(
             category__id=category_id,
             is_published=True
         ).order_by('-id')
     )
 
+    for receita in receitas:
+        category_name = receita.category.name
+
     contexto = {
         'receitas': receitas,
+        'title': f'{category_name}  - Category | '
     }
 
     return render(
@@ -42,12 +46,15 @@ def category(request, category_id):
 
 def recipe(request, id):
 
-    receita = (
-        models.Recipe.objects.get(id=id)
+    receita = get_object_or_404(
+        models.Recipe,
+        id=id,
+        is_published=True
     )
 
     contexto = {
-        'receita': receita
+        'receita': receita,
+        'is_detail_page': True,
     }
 
     return render(
