@@ -8,26 +8,17 @@ class RecipeModelTest(RecipeTestBase):
         self.recipe = self.make_recipe()
         return super().setUp()
 
-    def test_recipe_title_raises_error_if_title_has_more_than_65_chars(self):
-        self.recipe.title = 'A' * 70
+    def test_recipe_fields_max_length(self):
+        fields = [
+            ('title', 65),
+            ('description', 255),
+            ('preparation_time_unit', 65),
+            ('servings_unit', 65),
+        ]
 
-        with self.assertRaises(ValidationError):
-            self.recipe.full_clean()
-
-    def test_recipe_description_raises_error_if_title_has_more_than_65_chars(self):  # noqa: E501
-        self.recipe.description = 'A' * 300
-
-        with self.assertRaises(ValidationError):
-            self.recipe.full_clean()
-
-    def test_recipe_preparation_time_unit_raises_error_if_title_has_more_than_65_chars(self):  # noqa: E501
-        self.recipe.preparation_time_unit = 'A' * 70
-
-        with self.assertRaises(ValidationError):
-            self.recipe.full_clean()
-
-    def test_recipe_servings_unit_raises_error_if_title_has_more_than_65_chars(self):  # noqa: E501
-        self.recipe.servings_unit = 'A' * 70
-
-        with self.assertRaises(ValidationError):
-            self.recipe.full_clean()
+        for field, max_length in fields:
+            setattr(
+                self.recipe, field, 'A' * (max_length + 5)
+            )
+            with self.assertRaises(ValidationError):
+                self.recipe.full_clean()
