@@ -78,7 +78,9 @@ class Recipe(models.Model):
 
     cover = models.ImageField(
         upload_to='recipes/cover/%Y/%m/%d/',
-        verbose_name='Imagem da receita'
+        verbose_name='Imagem da receita',
+        blank=True,
+        default='',
     )
 
     category = models.ForeignKey(
