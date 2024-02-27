@@ -74,5 +74,5 @@ class RecipeModelTest(RecipeTestBase):
         self.recipe.full_clean()
         self.recipe.save()
         self.assertEqual(
-            str(self.recipe.category), 'Testing representation'
+            str(self.recipe.category.name), 'Testing representation'
         )
