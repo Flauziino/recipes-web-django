@@ -1,5 +1,6 @@
-from .test_recipes_base import RecipeTestBase
+from .test_recipes_base import RecipeTestBase, Recipe
 from django.core.exceptions import ValidationError
+from parameterized import parameterized
 
 
 class RecipeModelTest(RecipeTestBase):
@@ -8,17 +9,70 @@ class RecipeModelTest(RecipeTestBase):
         self.recipe = self.make_recipe()
         return super().setUp()
 
-    def test_recipe_fields_max_length(self):
-        fields = [
+    def make_recipe_no_defaults(self):
+        recipe = Recipe(
+            category=self.make_category(name='Test Default Category'),
+            author=self.make_author(username='newuser'),
+            title='Recipe Title',
+            description='Recipe Description',
+            slug='recipe-slug',
+            preparation_time=10,
+            preparation_time_unit='Minutos',
+            servings=5,
+            servings_unit='Porções',
+            preparation_steps='Recipe Preparation Steps',
+        )
+        recipe.full_clean()
+        recipe.save()
+        return recipe
+
+    @parameterized.expand([
             ('title', 65),
             ('description', 255),
             ('preparation_time_unit', 65),
             ('servings_unit', 65),
-        ]
+        ])
+    def test_recipe_fields_max_length(self, field, max_length):
+        setattr(
+            self.recipe, field,
+            'A' * (max_length + 5)
+        )
+        with self.assertRaises(ValidationError):
+            self.recipe.full_clean()
 
-        for field, max_length in fields:
-            setattr(
-                self.recipe, field, 'A' * (max_length + 5)
-            )
-            with self.assertRaises(ValidationError):
-                self.recipe.full_clean()
+    def test_recipe_preparation_steps_is_html_is_false_by_default(self):
+        recipe = self.make_recipe_no_defaults()
+        self.assertFalse(
+            recipe.preparation_steps_is_html,
+            msg='Recipe preparation_steps_is_html is not False',
+        )
+
+    def test_recipe_is_published_is_false_by_default(self):
+        recipe = self.make_recipe_no_defaults()
+        self.assertFalse(
+            recipe.is_published,
+            msg='Recipe is_published is not False',
+        )
+
+    def test_recipe_string_representation(self):
+        self.recipe.title = 'Testing representation'
+        self.recipe.full_clean()
+        self.recipe.save()
+        self.assertEqual(
+            str(self.recipe), 'Testing representation'
+        )
+
+    def test_category_name_raises_error_if_title_has_more_than_65_chars(self):
+        category = self.make_category(name="Testing")
+        category.name = 'A' * 70
+
+        with self.assertRaises(ValidationError):
+            category.full_clean()
+
+    def test_category_string_representation(self):
+        self.recipe.category.name = 'Testing representation'
+        self.recipe.full_clean()
+        self.recipe.save()
+        self.assertEqual(
+            str(self.recipe.category), 'Testing representation'
+        )
