@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from parameterized import parameterized
 
 
-class RecipeModelTest(RecipeTestBase):
+class RecipeModelsTest(RecipeTestBase):
 
     def setUp(self) -> None:
         self.recipe = self.make_recipe()
@@ -62,6 +62,7 @@ class RecipeModelTest(RecipeTestBase):
             str(self.recipe), 'Testing representation'
         )
 
+    # Model category
     def test_category_name_raises_error_if_title_has_more_than_65_chars(self):
         category = self.make_category(name="Testing")
         category.name = 'A' * 70
@@ -74,5 +75,5 @@ class RecipeModelTest(RecipeTestBase):
         self.recipe.full_clean()
         self.recipe.save()
         self.assertEqual(
-            str(self.recipe.category.name), 'Testing representation'
+            str(self.recipe.category.name), 'Testing representation',
         )
