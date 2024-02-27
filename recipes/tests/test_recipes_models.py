@@ -71,9 +71,10 @@ class RecipeModelsTest(RecipeTestBase):
             category.full_clean()
 
     def test_category_string_representation(self):
-        self.recipe.category.name = 'Testing representation'
-        self.recipe.full_clean()
-        self.recipe.save()
+        category = self.make_category(name='Name-cat')
+        category.name = 'TESTEE'
+        category.full_clean()
+        category.save()
         self.assertEqual(
-            str(self.recipe.category.name), 'Testing representation',
+            str(category), 'TESTEE'
         )
