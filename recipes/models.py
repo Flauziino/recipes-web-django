@@ -32,7 +32,9 @@ class Recipe(models.Model):
         max_length=255,
     )
 
-    slug = models.SlugField()
+    slug = models.SlugField(
+        unique=True
+    )
 
     preparation_time = models.IntegerField(
         verbose_name='Tempo de preparação'

@@ -40,6 +40,10 @@ class RecipeTestBase(TestCase):
         preparation_steps_is_html=False,
         is_published=True,
     ):
+        cont = 0
+        for i in range(0, 5):
+            cont += i
+
         if category_data is None:
             category_data = {}
 
@@ -51,7 +55,7 @@ class RecipeTestBase(TestCase):
             author=self.make_author(**author_data),
             title=title,
             description=description,
-            slug=slug,
+            slug=slug + str(cont),
             preparation_time=preparation_time,
             preparation_time_unit=preparation_time_unit,
             servings=servings,

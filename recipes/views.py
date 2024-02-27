@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from . import models
+from django.http.response import Http404
 
 
 def index(request):
@@ -61,4 +62,16 @@ def recipe(request, id):
         request,
         'recipes/recipe-view.html',
         contexto
+    )
+
+
+def search(request):
+    search_term = request.GET.get('q')
+
+    if not search_term:
+        raise Http404()
+
+    return render(
+        request,
+        'recipes/search.html'
     )

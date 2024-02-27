@@ -7,6 +7,7 @@ app_name = 'recipes'
 # urls do app recipes
 urlpatterns = [
     path('', views.index, name='index'),
+    path('recipes/search', views.search, name='search'),
 
     path(
         'recipes/category/<int:category_id>/',
