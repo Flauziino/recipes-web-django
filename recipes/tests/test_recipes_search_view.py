@@ -44,3 +44,37 @@ class RecipeSearchTest(RecipeTestBase):
             'Search for &lt;script&gt;test&lt;/script&gt;',
             response.content.decode('utf-8')
         )
+
+    def test_recipe_search_can_find_recipe_by_title(self):
+        title = 'This is recipe one'
+        a_title = 'This is recipe two'
+
+        recipe = self.make_recipe(
+            slug='one',
+            title=title,
+            author_data={'username': 'one'}
+        )
+
+        a_recipe = self.make_recipe(
+            slug='two',
+            title=a_title,
+            author_data={'username': 'two'}
+        )
+        response = self.client.get(
+            reverse('recipes:search') + f'?q={title}'
+            )
+        a_response = self.client.get(
+            reverse('recipes:search') + f'?q={a_title}'
+            )
+        response_both = self.client.get(
+            reverse('recipes:search',) + '?q=This'
+            )
+
+        self.assertIn(recipe, response.context['receitas'])
+        self.assertNotIn(a_recipe, response.context['receitas'])
+
+        self.assertIn(a_recipe, a_response.context['receitas'])
+        self.assertNotIn(recipe, a_response.context['receitas'])
+
+        self.assertIn(recipe, response_both.context['receitas'])
+        self.assertIn(a_recipe, response_both.context['receitas'])
