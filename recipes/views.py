@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.http.response import Http404
 from django.db.models import Q
+from django.core.paginator import Paginator
 
+from utils.pagination import make_pagination_range
 from . import models
 
 
@@ -12,8 +14,23 @@ def index(request):
         .order_by('-id')
         )
 
+    try:
+        current_page = int(request.GET.get('page', 1))
+    except ValueError:
+        current_page = 1
+
+    paginator = Paginator(receitas, 6)
+    page_obj = paginator.get_page(current_page)
+
+    pagination_range = make_pagination_range(
+        paginator.page_range,
+        4,
+        current_page
+    )
+
     contexto = {
-        'receitas': receitas,
+        'receitas': page_obj,
+        'pagination_range': pagination_range,
     }
 
     return render(
