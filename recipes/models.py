@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from utils.imagem import resize_image
+
 
 class Category(models.Model):
 
@@ -103,3 +105,17 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+
+        current_cover_name = str(self.cover.name)
+        super_save = super().save(*args, **kwargs)
+        cover_changed = False
+
+        if self.cover:
+            cover_changed = current_cover_name != self.cover.name
+
+        if cover_changed:
+            resize_image(self.cover, 468, 360, True, 70)
+
+        return super_save
