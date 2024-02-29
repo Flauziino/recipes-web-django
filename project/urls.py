@@ -7,6 +7,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('recipes.urls')),  # linkando urls do app recipes
+    path('authors/', include('authors.urls')),  # linkando urls do app authors
 ]
 
 urlpatterns += static(
