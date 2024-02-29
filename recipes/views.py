@@ -1,9 +1,17 @@
+import os
+from dotenv import load_dotenv
+
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.http.response import Http404
 from django.db.models import Q
 
 from utils.pagination import make_pagination
 from . import models
+
+
+load_dotenv()
+
+PER_PAGE = int(os.environ.get('PER_PAGE', 6))
 
 
 def index(request):
@@ -16,7 +24,7 @@ def index(request):
     page_obj, pagination_range = make_pagination(
         request,
         receitas,
-        6,
+        PER_PAGE,
     )
 
     contexto = {
@@ -46,7 +54,7 @@ def category(request, category_id):
     page_obj, pagination_range = make_pagination(
         request,
         receitas,
-        6,
+        PER_PAGE,
     )
 
     contexto = {
@@ -98,7 +106,7 @@ def search(request):
     page_obj, pagination_range = make_pagination(
         request,
         receitas,
-        6,
+        PER_PAGE,
     )
 
     contexto = {
