@@ -3,13 +3,16 @@
 {% block title %}Home | {% endblock title %}
 
 {% block content %}
+
+{% include 'recipes/partials/_messages.html' %}
+
 <div class="main-content main-content-list container">
-{% for receita in receitas %}
-    {% include 'recipes/partials/_recipe.html' %}
-{% empty %}
-    <div class="center m-y">
-        <h1>No momento não tem-se receitas</h1>
-    </div>
-{% endfor %}
+    {% for receita in receitas %}
+        {% include 'recipes/partials/_recipe.html' %}
+    {% empty %}
+        <div class="center m-y">
+            <h1>No momento não tem-se receitas</h1>
+        </div>
+    {% endfor %}
 </div>
 {% endblock content %}re 🥲
