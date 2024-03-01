@@ -14,6 +14,22 @@ class RegisterForm(forms.ModelForm):
         add_placeholder(self.fields['first_name'], 'Ex.: John')
         add_placeholder(self.fields['last_name'], 'Ex.: Doe')
 
+    first_name = forms.CharField(
+        error_messages={'required': 'Escreve seu nome'},
+        label='Nome'
+    )
+
+    last_name = forms.CharField(
+        error_messages={'required': 'Escreve seu sobrenome'},
+        label='Sobrenome'
+    )
+
+    email = forms.EmailField(
+        error_messages={'required': 'O campo e-mail não pode ficar em branco'},
+        label='E-mail',
+        help_text='Digite um e-mail válido'
+    )
+
     password = forms.CharField(
         label='Senha',
         required=True,
@@ -48,17 +64,8 @@ class RegisterForm(forms.ModelForm):
         error_messages = {
             'username': {
                 'required': 'Este campo é obrigatório'
+                }
             },
-            'first_name': {
-                'required': 'Este campo é obrigatório'
-            },
-            'email': {
-                'required': 'Este campo é obrigatório'
-            },
-            'password': {
-                'required': 'Este campo é obrigatório'
-            },
-        }
 
     # # Apenas um exemplo de validação de campo para ficar salvo
     # def clean_password(self):

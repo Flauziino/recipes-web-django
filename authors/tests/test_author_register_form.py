@@ -62,6 +62,7 @@ class AuthorRegisterFormTest(TestCase):
             ' Letras, números e @/./+/-/_ apenas.'
             )
          ),
+        ('email', 'Digite um e-mail válido')
     ])
     def test_field_help_text(self, field, needed):
         form = RegisterForm()
@@ -69,10 +70,10 @@ class AuthorRegisterFormTest(TestCase):
         self.assertEqual(current, needed)
 
     @parameterized.expand([
-        ('first_name', 'Primeiro nome'),
-        ('last_name', 'Último nome'),
+        ('first_name', 'Nome'),
+        ('last_name', 'Sobrenome'),
         ('username', 'Usuário'),
-        ('email', 'Endereço de email'),
+        ('email', 'E-mail'),
         ('password', 'Senha'),
         ('password2', 'Confirme sua senha'),
     ])
@@ -95,11 +96,12 @@ class AuthorRegisterIntegrationTest(DjangoTestCase):
         return super().setUp(*args, **kwargs)
 
     @parameterized.expand([
-        ('username', 'Este campo é obrigatóiro'),
-        # ('last_name', 'Este campo é obrigatório'),
-        # ('email', 'Este campo é obrigatório'),
-        # ('password', 'Este campo é obrigatório'),
-        # ('password2', 'Este campo é obrigatório'),
+        ('username', 'Este campo é obrigatório'),
+        ('first_name', 'Escreve seu nome'),
+        ('last_name', 'Escreve seu sobrenome'),
+        ('email', 'O campo e-mail não pode ficar em branco'),
+        ('password', 'O campo não pode estar vazio'),
+        ('password2', 'Este campo é obrigatório.'),
     ])
     def test_fields_cannot_be_empty(self, field, msg):
         self.form_data[field] = ' '
