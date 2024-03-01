@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 from utils.placeholder import add_placeholder
+from utils.strong_password import strong_password
 
 
 class RegisterForm(forms.ModelForm):
@@ -24,7 +27,8 @@ class RegisterForm(forms.ModelForm):
             'A senha deve conter pelo menos uma letra maiúscula, '
             'uma letra minúscula e um número. O comprimento deve ser '
             'pelo menos 8 caracteres.'
-        )
+        ),
+        validators=[strong_password]
     )
     password2 = forms.CharField(
         label='Repita sua senha',
@@ -55,3 +59,28 @@ class RegisterForm(forms.ModelForm):
                 'required': 'Este campo é obrigatório'
             },
         }
+
+    # # Apenas um exemplo de validação de campo para ficar salvo
+    # def clean_password(self):
+    #     data = self.cleaned_data.get('password')
+
+    #     if 'atencao' in data:
+    #         raise ValidationError(
+    #             'Não digite "atencao" no campo: Senha',
+    #             code='invalid',
+    #             params={'value': '"atencao"'}
+    #         )
+
+    # validaçao generalista
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password')
+        password2 = cleaned_data.get('password2')
+
+        if password1 != password2:
+            raise ValidationError(
+                {
+                    'password': 'As duas senhas precisam ser iguais!',
+                    'password2': 'As duas senhas precisam ser iguais!'
+                }
+            )
