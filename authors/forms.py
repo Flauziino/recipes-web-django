@@ -31,10 +31,10 @@ class RegisterForm(forms.ModelForm):
         validators=[strong_password]
     )
     password2 = forms.CharField(
-        label='Repita sua senha',
+        label='Confirme sua senha',
         required=True,
         widget=forms.PasswordInput(attrs={
-            'placeholder': 'Repita sua senha'
+            'placeholder': 'Confirme sua senha'
         })
     )
 
