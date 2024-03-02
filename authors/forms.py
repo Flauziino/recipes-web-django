@@ -7,6 +7,14 @@ from utils.strong_password import strong_password
 
 
 class RegisterForm(forms.ModelForm):
+
+    class Meta:
+        model = User
+        fields = [
+            'first_name', 'last_name', 'username',
+            'email', 'password'
+        ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         add_placeholder(self.fields['username'], 'Seu nome de usuário')
@@ -22,6 +30,21 @@ class RegisterForm(forms.ModelForm):
     last_name = forms.CharField(
         error_messages={'required': 'Escreve seu sobrenome'},
         label='Sobrenome'
+    )
+
+    username = forms.CharField(
+        label='Usuário',
+        help_text=(
+            'O campo deve ter letras, números e @.+-_ apenas.'
+            'Deve estar entre 4 e 150 caracteres.'
+        ),
+        error_messages={
+            'required': 'Este campo é obrigatório',
+            'min_length': 'Deve conter pelo menos 4 caracteres',
+            'max_length': 'Deve ter no máximo 150 caracteres',
+            },
+        min_length=4,
+        max_length=150,
     )
 
     email = forms.EmailField(
@@ -53,20 +76,6 @@ class RegisterForm(forms.ModelForm):
             'placeholder': 'Confirme sua senha'
         })
     )
-
-    class Meta:
-        model = User
-        fields = [
-            'first_name', 'last_name', 'username',
-            'email', 'password'
-        ]
-
-        error_messages = {
-            'username': {
-                'required': 'Este campo é obrigatório'
-                }
-            },
-
     # # Apenas um exemplo de validação de campo para ficar salvo
     # def clean_password(self):
     #     data = self.cleaned_data.get('password')

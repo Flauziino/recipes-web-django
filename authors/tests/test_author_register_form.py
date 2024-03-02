@@ -58,8 +58,8 @@ class AuthorRegisterFormTest(TestCase):
             )
          ),
         ('username', (
-            'Obrigatório. 150 caracteres ou menos.'
-            ' Letras, números e @/./+/-/_ apenas.'
+            'O campo deve ter letras, números e @.+-_ apenas.'
+            'Deve estar entre 4 e 150 caracteres.'
             )
          ),
         ('email', 'Digite um e-mail válido')
@@ -109,6 +109,72 @@ class AuthorRegisterIntegrationTest(DjangoTestCase):
         response = self.client.post(
             url, data=self.form_data, follow=True
         )
+        self.assertIn(
+            msg, response.content.decode('utf-8')
+        )
+
+    def test_username_field_min_length_shoud_be_4_char(self):
+        # testanto a msg de erro de min_length
+        self.form_data['username'] = 'joa'
+        url = reverse('authors:create')
+        response = self.client.post(
+            url, data=self.form_data, follow=True
+        )
+        msg = 'Deve conter pelo menos 4 caracteres'
+        self.assertIn(
+            msg, response.content.decode('utf-8')
+        )
+
+    def test_username_field_max_length_shoud_be_less_than_150_char(self):
+        # testando a msg de erro de max_length
+        self.form_data['username'] = ('j' * 151)
+        url = reverse('authors:create')
+        response = self.client.post(
+            url, data=self.form_data, follow=True
+        )
+        msg = 'Deve ter no máximo 150 caracteres'
+        self.assertIn(
+            msg, response.content.decode('utf-8')
+        )
+
+    def test_password_field_has_upper_lower_case_letters_and_numbers(self):
+        self.form_data['password'] = 'abc123'
+        url = reverse('authors:create')
+        response = self.client.post(
+            url, data=self.form_data, follow=True
+        )
+        msg = (
+            'A senha deve conter pelo menos uma letra maiúscula,'
+            ' uma letra minúscula e um número.'
+            ' O comprimento deve ser pelo menos 8 caracteres.'
+            )
+
+        self.assertIn(
+            msg, response.content.decode('utf-8')
+        )
+
+    def test_password_and_password2_are_equal_and_strong(self):
+        self.form_data['password'] = 'Abc123456'
+        self.form_data['password2'] = 'Abc123456'
+
+        url = reverse('authors:create')
+        response = self.client.post(
+            url, data=self.form_data, follow=True
+        )
+        msg = 'As duas senhas precisam ser iguais!'
+
+        self.assertNotIn(
+            msg, response.content.decode('utf-8')
+        )
+
+    def test_password_and_password_2_must_be_equal(self):
+        self.form_data['password'] = 'Abc123456'
+        self.form_data['password2'] = 'Abc1234567'
+        url = reverse('authors:create')
+        response = self.client.post(
+            url, data=self.form_data, follow=True
+        )
+        msg = 'As duas senhas precisam ser iguais!'
         self.assertIn(
             msg, response.content.decode('utf-8')
         )
