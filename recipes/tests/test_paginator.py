@@ -1,6 +1,8 @@
 from unittest import TestCase
-from utils.pagination import make_pagination_range, make_pagination
+
 from django.http import HttpRequest
+
+from utils.pagination import make_pagination_range, make_pagination
 
 
 class PaginatorTestFunc(TestCase):

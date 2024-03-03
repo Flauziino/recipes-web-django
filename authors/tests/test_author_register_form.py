@@ -178,3 +178,38 @@ class AuthorRegisterIntegrationTest(DjangoTestCase):
         self.assertIn(
             msg, response.content.decode('utf-8')
         )
+
+    def test_send_get_request_to_registration_create_views_return_404(self):
+        url = reverse('authors:create')
+        response = self.client.get(url)
+
+        self.assertEqual(
+            response.status_code, 404
+        )
+
+    def test_authors_register_view_loads_correct_template(self):
+        response = self.client.get(
+            reverse(
+                'authors:register'
+            )
+        )
+
+        self.assertTemplateUsed(
+            response, 'author/register_view.html'
+            )
+
+    def test_authors_register_view_context(self):
+        response = self.client.get(
+            reverse(
+                'authors:register'
+            )
+        )
+
+        self.assertTemplateUsed(
+            response, 'author/register_view.html'
+            )
+
+        content = response.content.decode('utf-8')
+
+        # checando se ela existe
+        self.assertIn('form', content)
