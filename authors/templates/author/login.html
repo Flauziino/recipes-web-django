@@ -5,7 +5,21 @@
 {% block content %}
 
   <div class="main-content center container">
-    <h2>Login {{ request.session.number }}</h2>
+    <h2>Login</h2>
+    {% if request.user.is_authenticated %}
+
+      <div>
+        Você esta logado com
+        {{ request.user.username }}. <br>
+        Por favor,
+        <form class="inline-form" action="{% url 'authors:logout' %}" method='POST'>
+          {% csrf_token %}
+          <input type="hidden" name="username" value="{{ request.user.username }}">
+          <button class="plaintext-button" type="submit">clique aqui</button>
+        </form> para deslogar.
+      </div>
+
+    {% endif %}
   </div>
 
     {% include "global/partials/_messages.html" %}
