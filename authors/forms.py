@@ -76,16 +76,18 @@ class RegisterForm(forms.ModelForm):
             'placeholder': 'Confirme sua senha'
         })
     )
-    # # Apenas um exemplo de validação de campo para ficar salvo
-    # def clean_password(self):
-    #     data = self.cleaned_data.get('password')
 
-    #     if 'atencao' in data:
-    #         raise ValidationError(
-    #             'Não digite "atencao" no campo: Senha',
-    #             code='invalid',
-    #             params={'value': '"atencao"'}
-    #         )
+    # Apenas um exemplo de validação de campo para ficar salvo
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        exists = User.objects.filter(email=email).exists()
+
+        if exists:
+            raise ValidationError(
+                'O e-mail ja esta cadastrado na base de dados!'
+            )
+
+        return email
 
     # validaçao generalista
     def clean(self):

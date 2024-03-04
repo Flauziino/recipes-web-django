@@ -213,3 +213,19 @@ class AuthorRegisterIntegrationTest(DjangoTestCase):
 
         # checando se ela existe
         self.assertIn('form', content)
+
+    def test_email_must_be_unique(self):
+        url = reverse('authors:create')
+
+        self.client.post(
+            url, data=self.form_data, follow=True
+            )
+
+        response = self.client.post(
+            url, data=self.form_data, follow=True
+        )
+
+        msg = 'O e-mail ja esta cadastrado na base de dados!'
+
+        self.assertIn(msg, response.context['form'].errors.get('email'))
+        self.assertIn(msg, response.content.decode('utf-8'))
