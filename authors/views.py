@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect
-from .forms import RegisterForm
 from django.http import Http404
 from django.contrib import messages
+from django.urls import reverse
+
+from .forms import RegisterForm
 
 
 def register_view(request):
     form = RegisterForm()
 
     contexto = {
-        'form': form
+        'form': form,
+        'form_action': reverse('authors:create')
     }
 
     return render(
