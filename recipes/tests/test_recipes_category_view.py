@@ -56,12 +56,7 @@ class RecipeCategoryTest(RecipeTestBase):
         self.assertEqual(response.status_code, 404)
 
     def test_recipes_category_is_paginated(self):
-        for i in range(10):
-            kwargs = {
-                'slug': f'r{i}',
-                'author_data': {'username': f'u{i}'}
-            }
-            self.make_recipe(**kwargs)
+        self.make_recipe_in_batch(qtd=10)
 
         with patch('recipes.views.PER_PAGE', new=2):
             response = self.client.get(

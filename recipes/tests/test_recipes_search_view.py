@@ -81,12 +81,7 @@ class RecipeSearchTest(RecipeTestBase):
         self.assertIn(a_recipe, response_both.context['receitas'])
 
     def test_recipes_search_is_paginated(self):
-        for i in range(5):
-            kwargs = {
-                'slug': f'r{i}',
-                'author_data': {'username': f'u{i}'}
-            }
-            self.make_recipe(**kwargs)
+        self.make_recipe_in_batch(qtd=5)
 
         with patch('recipes.views.PER_PAGE', new=2):
             response = self.client.get(

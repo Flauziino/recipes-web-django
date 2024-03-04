@@ -82,12 +82,7 @@ class RecipeIndexTest(RecipeTestBase):
             response.content.decode('utf-8'))
 
     def test_recipes_index_is_paginated(self):
-        for i in range(8):
-            kwargs = {
-                'slug': f'r{i}',
-                'author_data': {'username': f'u{i}'}
-            }
-            self.make_recipe(**kwargs)
+        self.make_recipe_in_batch(qtd=8)
 
         with patch('recipes.views.PER_PAGE', new=3):
             response = self.client.get(
@@ -104,12 +99,7 @@ class RecipeIndexTest(RecipeTestBase):
     def test_pagination_current_page_conversion_with_invalid_value_again_but_with_dif_type_of_test(self):  # noqa: E501
         # testando o pagination para pagina "invalida" em outro local
         # para ver se levanta o "valueerror" e o "current_page" se torna 1
-        for i in range(8):
-            kwargs = {
-                'slug': f'r{i}',
-                'author_data': {'username': f'u{i}'}
-            }
-            self.make_recipe(**kwargs)
+        self.make_recipe_in_batch(qtd=8)
 
         with patch('recipes.views.PER_PAGE', new=3):
             response = self.client.get(
