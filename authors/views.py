@@ -3,7 +3,7 @@ from django.http import Http404
 from django.contrib import messages
 from django.urls import reverse
 
-from .forms import RegisterForm
+from .forms import RegisterForm, LoginForm
 
 
 def register_view(request):
@@ -58,4 +58,25 @@ def register_create(request):
         request,
         'author/register_view.html',
         contexto
+    )
+
+
+def login_view(request):
+    form = LoginForm
+
+    contexto = {
+        'form': form,
+        'form_action': reverse('authors:login_create')
+    }
+    return render(
+        request,
+        'author/login.html',
+        contexto
+    )
+
+
+def login_create(request):
+    return render(
+        request,
+        'author/login.html'
     )
