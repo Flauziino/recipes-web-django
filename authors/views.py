@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
 from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, AuthorRecipeForm
 from recipes.models import Recipe
 
 
@@ -158,5 +158,32 @@ def dashboard(request):
     return render(
         request,
         'author/dashboard.html',
+        contexto
+    )
+
+
+@login_required(
+    login_url='authors:login', redirect_field_name='next'
+)
+def dashboard_recipe_edit(request, id):
+    receita = get_object_or_404(
+        Recipe,
+        is_published=False,
+        author=request.user,
+        pk=id
+        )
+
+    form = AuthorRecipeForm(
+        request.POST or None,
+        instance=receita
+        )
+
+    contexto = {
+        'form': form
+    }
+
+    return render(
+        request,
+        'author/dashboard_recipe.html',
         contexto
     )

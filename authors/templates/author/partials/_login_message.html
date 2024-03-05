@@ -3,7 +3,7 @@
     <div class="login-message">
     Você esta logado com 
     {{ request.user.username }}. <br>
-    Por favor, 
+    <a href="{% url "authors:dashboard" %}">Veja suas receitas</a> ou
     <form class="inline-form" action="{% url 'authors:logout' %}" method='POST'>
         {% csrf_token %}
         <input type="hidden" name="username" value="{{ request.user.username }}">

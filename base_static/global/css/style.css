@@ -68,6 +68,15 @@ h6 {
   font-family: var(--font-headings);
 }
 
+img {
+  max-width: 100%;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
 .container {
   max-width: 144rem;
   margin: 0 auto;
@@ -316,6 +325,10 @@ h6 {
   display: inline;
 }
 
+.span-2 {
+  grid-column: span 2;
+}
+
 .plaintext-button {
   display: inline;
   border: none;
@@ -417,7 +430,9 @@ h6 {
   color: var(--color-error-dark);
 }
 
-.form-content input {
+.form-content input,
+.form-content textarea,
+.form-content select {
   width: 100%;
   padding: 1rem;
   border-radius: 0.4rem;
@@ -465,6 +480,10 @@ h6 {
 
 .center {
   text-align: center;
+}
+
+.left {
+  text-align: left;
 }
 
 .m-x {

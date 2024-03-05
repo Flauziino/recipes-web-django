@@ -16,7 +16,7 @@
       <ul>
         {% for receita in receitas %}
           <li>
-            <a href="#">{{ receita.title }}</a>
+            <a href="{% url "authors:dashboard_edit" receita.id %}">{{ receita.title }}</a>
           </li>
         {% empty %}
         <li>
