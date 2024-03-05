@@ -39,13 +39,13 @@ def register_create(request):
         messages.success(
             request,
             'Cadastro realizado com sucesso!'
-            )
+        )
 
         del (request.session['register_form_data'])
 
         return redirect(
             reverse('authors:login')
-            )
+        )
 
     contexto = {
         'form': form
@@ -102,17 +102,31 @@ def login_create(request):
         )
         return redirect('authors:login')
 
+    messages.error(
+        request, 'Falha ao logar, usuário ou senha inválidos'
+    )
+    return redirect('authors:login')
+
 
 @login_required(
-        login_url='authors:login', redirect_field_name='next'
-        )
+    login_url='authors:login', redirect_field_name='next'
+)
 def logout_view(request):
     if not request.POST:
+
+        messages.error(
+            request, 'Você precisa estar logado para realizar esta ação'
+        )
+
         return redirect(
             reverse('authors:login')
         )
 
     if request.POST.get('username') != request.user.username:
+        messages.error(
+            request, 'Este usuário não tem acesso a esta página'
+        )
+
         return redirect(
             reverse('authors:login')
         )

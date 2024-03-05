@@ -124,7 +124,6 @@ class AuthorsRegisterTest(AuthorsBaseTest):
         ).send_keys('emailtest@email.com')
 
         self.get_by_placeholder(form, 'Sua senha').send_keys('Abc@12345')
-
         self.get_by_placeholder(
             form, 'Confirme sua senha'
         ).send_keys('Abc@12345')

@@ -1,4 +1,6 @@
 from unittest import TestCase
+
+from django.contrib.auth.models import User
 from django.test import TestCase as DjangoTestCase
 from django.urls import reverse
 
@@ -249,3 +251,53 @@ class AuthorRegisterIntegrationTest(DjangoTestCase):
         )
 
         self.assertTrue(is_authenticated)
+
+
+class AuthorLogoutTest(DjangoTestCase):
+    def test_user_tries_to_logout_using_get_method(self):
+        User.objects.create_user(username='my_user', password='my_pass')
+        self.client.login(username='my_user', password='my_pass')
+
+        response = self.client.get(
+            reverse('authors:logout'),
+            follow=True
+        )
+
+        self.assertIn(
+            'Você precisa estar logado para realizar esta ação',
+            response.content.decode('utf-8')
+        )
+
+    def test_user_tries_to_logout_using_another_user(self):
+        User.objects.create_user(username='my_user', password='my_pass')
+        self.client.login(username='my_user', password='my_pass')
+
+        response = self.client.post(
+            reverse('authors:logout'),
+            data={
+                'username': 'another_user'
+            },
+            follow=True
+        )
+
+        self.assertIn(
+            'Este usuário não tem acesso a esta página',
+            response.content.decode('utf-8')
+        )
+
+    def test_user_can_logout_successfully(self):
+        User.objects.create_user(username='my_user', password='my_pass')
+        self.client.login(username='my_user', password='my_pass')
+
+        response = self.client.post(
+            reverse('authors:logout'),
+            data={
+                'username': 'my_user'
+            },
+            follow=True
+        )
+
+        self.assertIn(
+            'Deslogado com sucesso!',
+            response.content.decode('utf-8')
+        )
