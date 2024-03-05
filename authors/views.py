@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from .forms import RegisterForm, LoginForm
+from recipes.models import Recipe
 
 
 def register_view(request):
@@ -95,7 +96,7 @@ def login_create(request):
             )
             login(request, authenticated_user)
 
-            return redirect('recipes:index')
+            return redirect('authors:dashboard')
 
         messages.error(
             request, 'Falha ao logar, usuário ou senha inválidos'
@@ -138,4 +139,24 @@ def logout_view(request):
 
     return redirect(
         reverse('authors:login')
+    )
+
+
+@login_required(
+    login_url='authors:login', redirect_field_name='next'
+)
+def dashboard(request):
+    receitas = Recipe.objects.filter(
+        is_published=False,
+        author=request.user
+    )
+
+    contexto = {
+        'receitas': receitas
+    }
+
+    return render(
+        request,
+        'author/dashboard.html',
+        contexto
     )
