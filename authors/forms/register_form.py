@@ -42,7 +42,7 @@ class RegisterForm(forms.ModelForm):
             'required': 'Este campo é obrigatório',
             'min_length': 'Deve conter pelo menos 4 caracteres',
             'max_length': 'Deve ter no máximo 150 caracteres',
-            },
+        },
         min_length=4,
         max_length=150,
     )
