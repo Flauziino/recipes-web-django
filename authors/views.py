@@ -174,8 +174,25 @@ def dashboard_recipe_edit(request, id):
         )
 
     form = AuthorRecipeForm(
-        request.POST or None,
+        data=request.POST or None,
+        files=request.FILES or None,
         instance=receita
+        )
+
+    if form.is_valid():
+        receita = form.save(commit=False)
+
+        receita.author = request.user
+        receita.preparation_steps_is_html = False
+        receita.is_published = False
+
+        receita.save()
+
+        messages.success(
+            request, 'Sua receita foi salva com sucesso!'
+        )
+        return redirect(
+            reverse('authors:dashboard_edit', args=(id,))
         )
 
     contexto = {
