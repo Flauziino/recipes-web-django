@@ -204,3 +204,54 @@ def dashboard_recipe_edit(request, id):
         'author/dashboard_recipe.html',
         contexto
     )
+
+
+@login_required(
+    login_url='authors:login', redirect_field_name='next'
+)
+def dashboard_recipe_create(request):
+
+    if request.method == 'POST':
+        form = AuthorRecipeForm(
+            data=request.POST,
+            files=request.FILES
+        )
+
+        if form.is_valid():
+            form.save(commit=False)
+
+            nova_receita = Recipe.objects.create(
+                title=form.cleaned_data['title'],
+                description=form.cleaned_data['description'],
+                preparation_time=form.cleaned_data['preparation_time'],
+                preparation_time_unit=form.cleaned_data['preparation_time_unit'],  # noqa: E501
+                servings=form.cleaned_data['servings'],
+                servings_unit=form.cleaned_data['servings_unit'],
+                preparation_steps=form.cleaned_data['preparation_steps'],
+                cover=form.cleaned_data['cover'],
+            )
+
+            nova_receita.author = request.user
+            nova_receita.preparation_steps_is_html = False
+            nova_receita.is_published = False
+
+            nova_receita.save()
+
+            messages.success(
+                request, 'Sua receita foi salva com sucesso!'
+            )
+
+            return redirect('authors:dashboard')
+
+    else:
+        form = AuthorRecipeForm()
+
+    contexto = {
+        'form': form,
+    }
+
+    return render(
+        request,
+        'author/dashboard_new_recipe.html',
+        contexto
+    )
