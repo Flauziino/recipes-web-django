@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 from utils.imagem import resize_image
 from utils.slug import new_slug
@@ -110,6 +111,11 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse(
+            'recipes:recipe', args=(self.id,)
+        )
 
     def save(self, *args, **kwargs):
         if not self.slug:

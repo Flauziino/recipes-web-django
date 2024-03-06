@@ -18,8 +18,9 @@
         {% for receita in receitas %}
           <li>
             <a href="{% url "authors:dashboard_edit" receita.id %}">{{ receita.title }}</a> --
-            <form action="{% url "authors:dashboard_delete" receita.id %}" class="inline-form form-delete" method="POST">
+            <form action="{% url "authors:dashboard_delete" %}" class="inline-form form-delete" method="POST">
               {% csrf_token %}
+              <input type="hidden" name="id" value="{{ receita.id }}">
               <button class="plaintext-button" type="submit">❌</button>
             </form>
           </li>

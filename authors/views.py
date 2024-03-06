@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views import View
 
 from .forms import RegisterForm, LoginForm, AuthorRecipeForm
 from recipes.models import Recipe
@@ -109,9 +111,7 @@ def login_create(request):
     return redirect('authors:login')
 
 
-@login_required(
-    login_url='authors:login', redirect_field_name='next'
-)
+@login_required(login_url='authors:login', redirect_field_name='next')
 def logout_view(request):
     if not request.POST:
 
@@ -142,9 +142,7 @@ def logout_view(request):
     )
 
 
-@login_required(
-    login_url='authors:login', redirect_field_name='next'
-)
+@login_required(login_url='authors:login', redirect_field_name='next')
 def dashboard(request):
     receitas = Recipe.objects.filter(
         is_published=False,
@@ -162,56 +160,88 @@ def dashboard(request):
     )
 
 
-@login_required(
-    login_url='authors:login', redirect_field_name='next'
+@method_decorator(
+    login_required(login_url='authors:login', redirect_field_name='next'),
+    name='dispatch'
 )
-def dashboard_recipe_edit(request, id):
-    receita = get_object_or_404(
-        Recipe,
-        is_published=False,
-        author=request.user,
-        pk=id
-    )
+class DashboardRecipeEdit(View):
+    def get_recipe(self, id):
+        receita = None
 
-    form = AuthorRecipeForm(
-        data=request.POST or None,
-        files=request.FILES or None,
-        instance=receita
-    )
+        if id:
+            receita = get_object_or_404(
+                Recipe,
+                is_published=False,
+                author=self.request.user,
+                pk=id
+            )
 
-    if form.is_valid():
-        receita = form.save(commit=False)
+        return receita
 
-        receita.author = request.user
-        receita.preparation_steps_is_html = False
-        receita.is_published = False
+    def render_recipe(self, form):
+        contexto = {
+            'form': form
+        }
 
-        receita.save()
-
-        messages.success(
-            request, 'Sua receita foi salva com sucesso!'
-        )
-        return redirect(
-            reverse('authors:dashboard_edit', args=(id,))
+        return render(
+            self.request,
+            'author/dashboard_recipe.html',
+            contexto
         )
 
-    contexto = {
-        'form': form
-    }
+    def get(self, request, id):
+        receita = self.get_recipe(id)
+        form = AuthorRecipeForm(instance=receita)
+        return self.render_recipe(form)
 
-    return render(
-        request,
-        'author/dashboard_recipe.html',
-        contexto
-    )
+    def post(self, request, id):
+        receita = self.get_recipe(id)
+
+        form = AuthorRecipeForm(
+            data=request.POST or None,
+            files=request.FILES or None,
+            instance=receita
+        )
+
+        if form.is_valid():
+            receita = form.save(commit=False)
+
+            receita.author = request.user
+            receita.preparation_steps_is_html = False
+            receita.is_published = False
+
+            receita.save()
+
+            messages.success(
+                request, 'Sua receita foi salva com sucesso!'
+            )
+
+            return redirect(
+                reverse('authors:dashboard_edit', args=(id,))
+            )
+
+        return self.render_recipe(form)
 
 
-@login_required(
-    login_url='authors:login', redirect_field_name='next'
+@method_decorator(
+    login_required(login_url='authors:login', redirect_field_name='next'),
+    name='dispatch'
 )
-def dashboard_recipe_create(request):
+class DashboardRecipeCreate(View):
+    def get(self, request):
+        form = AuthorRecipeForm()
 
-    if request.method == 'POST':
+        contexto = {
+            'form': form,
+        }
+
+        return render(
+            request,
+            'author/dashboard_new_recipe.html',
+            contexto
+        )
+
+    def post(self, request):
         form = AuthorRecipeForm(
             data=request.POST,
             files=request.FILES
@@ -243,24 +273,15 @@ def dashboard_recipe_create(request):
 
             return redirect('authors:dashboard')
 
-    else:
-        form = AuthorRecipeForm()
 
-    contexto = {
-        'form': form,
-    }
+@login_required(login_url='authors:login', redirect_field_name='next')
+def dashboard_recipe_delete(request):
+    if not request.POST:
+        raise Http404
 
-    return render(
-        request,
-        'author/dashboard_new_recipe.html',
-        contexto
-    )
+    POST = request.POST
+    id = POST.get('id')
 
-
-@login_required(
-    login_url='authors:login', redirect_field_name='next'
-)
-def dashboard_recipe_delete(request, id):
     receita = get_object_or_404(
         Recipe,
         is_published=False,
