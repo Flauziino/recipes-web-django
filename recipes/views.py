@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.http.response import Http404
 from django.db.models import Q
+from django.views.generic import ListView
 
 from utils.pagination import make_pagination
 from . import models
@@ -14,29 +15,41 @@ load_dotenv()
 PER_PAGE = int(os.environ.get('PER_PAGE', 6))
 
 
-def index(request):
+class RecipeListBaseListView(ListView):
+    model = models.Recipe
+    paginate_by = None
+    context_object_name = 'receitas'
+    ordering = ['-id']
+    template_name = 'recipes/index.html'
 
-    receitas = (
-        models.Recipe.objects.filter(is_published=True)
-        .order_by('-id')
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        qs = qs.filter(
+            is_published=True
         )
+        return qs
 
-    page_obj, pagination_range = make_pagination(
-        request,
-        receitas,
-        PER_PAGE,
-    )
+    def get_context_data(self, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
+        page_obj, pagination_range = make_pagination(
+            self.request,
+            ctx.get('receitas'),
+            PER_PAGE,
+        )
+        ctx.update({
+            'receitas': page_obj,
+            'pagination_range': pagination_range
+        })
 
-    contexto = {
-        'receitas': page_obj,
-        'pagination_range': pagination_range,
-    }
+        return ctx
 
-    return render(
-        request,
-        'recipes/index.html',
-        contexto
-    )
+
+class RecipeListIndexView(RecipeListBaseListView):
+    template_name = 'recipes/index.html'
+
+
+class RecipeListCategoryView(RecipeListBaseListView):
+    template_name = 'recipes/category.html'
 
 
 def category(request, category_id):

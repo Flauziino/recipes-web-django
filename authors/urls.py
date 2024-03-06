@@ -23,7 +23,7 @@ urlpatterns = [
     # delete
     path(
         'dashboard/recipe/delete',
-        views.dashboard_recipe_delete,
+        views.DashboardRecipeDelete.as_view(),
         name='dashboard_delete'
     ),
     # update/read

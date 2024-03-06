@@ -95,3 +95,29 @@ def dashboard_recipe_create(request):
         'author/dashboard_new_recipe.html',
         contexto
     )
+
+
+# FUNCBASEVIEW PARA DELETAR RECEITAS
+@login_required(login_url='authors:login', redirect_field_name='next')
+def dashboard_recipe_delete(request):
+    if not request.POST:
+        raise Http404
+
+    POST = request.POST
+    id = POST.get('id')
+
+    receita = get_object_or_404(
+        Recipe,
+        is_published=False,
+        author=request.user,
+        pk=id
+    )
+
+    receita.delete()
+    messages.success(
+        request, 'Receita apagada com sucesso!'
+    )
+
+    return redirect(
+        reverse('authors:dashboard')
+    )
