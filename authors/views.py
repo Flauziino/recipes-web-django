@@ -171,13 +171,13 @@ def dashboard_recipe_edit(request, id):
         is_published=False,
         author=request.user,
         pk=id
-        )
+    )
 
     form = AuthorRecipeForm(
         data=request.POST or None,
         files=request.FILES or None,
         instance=receita
-        )
+    )
 
     if form.is_valid():
         receita = form.save(commit=False)

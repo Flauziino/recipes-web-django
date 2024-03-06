@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from utils.imagem import resize_image
+from utils.slug import new_slug
 
 
 class Category(models.Model):
@@ -12,7 +13,7 @@ class Category(models.Model):
 
     name = models.CharField(
         max_length=65
-        )
+    )
 
     def __str__(self):
         return self.name
@@ -35,7 +36,11 @@ class Recipe(models.Model):
     )
 
     slug = models.SlugField(
-        unique=True
+        unique=True,
+        default=None,
+        null=True,
+        blank=True,
+        max_length=95
     )
 
     preparation_time = models.IntegerField(
@@ -107,6 +112,8 @@ class Recipe(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = new_slug(self.title)
 
         current_cover_name = str(self.cover.name)
         super_save = super().save(*args, **kwargs)
