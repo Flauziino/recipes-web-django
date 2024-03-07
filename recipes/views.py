@@ -1,13 +1,13 @@
 import os
 from dotenv import load_dotenv
 
-from django.shortcuts import render, get_list_or_404, get_object_or_404
-from django.http.response import Http404
 from django.db.models import Q
+from django.http import Http404
 from django.views.generic import ListView
+from django.shortcuts import render, get_object_or_404
 
-from utils.pagination import make_pagination
 from . import models
+from utils.pagination import make_pagination
 
 
 load_dotenv()
@@ -27,6 +27,7 @@ class RecipeListBaseListView(ListView):
         qs = qs.filter(
             is_published=True
         )
+
         return qs
 
     def get_context_data(self, *args, **kwargs):
@@ -51,36 +52,27 @@ class RecipeListIndexView(RecipeListBaseListView):
 class RecipeListCategoryView(RecipeListBaseListView):
     template_name = 'recipes/category.html'
 
+    def get_queryset(self, *args, **kwargs):
+        self.receitas = super().get_queryset(*args, **kwargs)
+        self.receitas = self.receitas.filter(
+            category__id=self.kwargs.get('category_id')
+        )
+        if not self.receitas:
+            raise Http404
 
-def category(request, category_id):
+        return self.receitas
 
-    receitas = get_list_or_404(
-        models.Recipe.objects.filter(
-            category__id=category_id,
-            is_published=True
-        ).order_by('-id')
-    )
+    def get_context_data(self, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
 
-    for receita in receitas:
-        category_name = receita.category.name
+        for receita in self.receitas:
+            category_name = receita.category.name
+            break
 
-    page_obj, pagination_range = make_pagination(
-        request,
-        receitas,
-        PER_PAGE,
-    )
-
-    contexto = {
-        'receitas': page_obj,
-        'title': f'{category_name}  - Category | ',
-        'pagination_range': pagination_range,
-    }
-
-    return render(
-        request,
-        'recipes/category.html',
-        contexto
-    )
+        ctx.update({
+            'title': f'{category_name}  - Category | ',
+        })
+        return ctx
 
 
 def recipe(request, id):
@@ -103,35 +95,29 @@ def recipe(request, id):
     )
 
 
-def search(request):
-    search_term = request.GET.get('q', '').strip()
+class RecipeListSearchView(RecipeListBaseListView):
+    template_name = 'recipes/search.html'
 
-    if not search_term:
-        raise Http404()
+    def get_queryset(self, *args, **kwargs):
+        self.search_term = self.request.GET.get('q', '').strip()
 
-    receitas = models.Recipe.objects.filter(
-        Q(
-            Q(title__icontains=search_term) |
-            Q(description__icontains=search_term),
-        ), is_published=True
-    ).order_by('id')
+        self.receitas = super().get_queryset(*args, **kwargs)
+        self.receitas = self.receitas.filter(
+            Q(title__icontains=self.search_term) |
+            Q(description__icontains=self.search_term),
+        )
 
-    page_obj, pagination_range = make_pagination(
-        request,
-        receitas,
-        PER_PAGE,
-    )
+        if not self.search_term:
+            raise Http404
 
-    contexto = {
-        'page_title': f'Search for {search_term} | ',
-        'search_term': search_term,
-        'receitas': page_obj,
-        'pagination_range': pagination_range,
-        'additional_url_query': f'&q={search_term}'
-    }
+        return self.receitas
 
-    return render(
-        request,
-        'recipes/search.html',
-        contexto
-    )
+    def get_context_data(self, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
+
+        ctx.update({
+            'page_title': f'Search for {self.search_term} | ',
+            'search_term': self.search_term,
+            'additional_url_query': f'&q={self.search_term}'
+        })
+        return ctx

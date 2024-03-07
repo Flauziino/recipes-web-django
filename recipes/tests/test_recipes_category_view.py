@@ -13,7 +13,7 @@ class RecipeCategoryTest(RecipeTestBase):
                 kwargs={'category_id': 1}
             )
         )
-        self.assertIs(view.func, views.category)
+        self.assertIs(view.func.view_class, views.RecipeListCategoryView)
 
     # teste do status code(category.view)
     def test_recipes_category_view_returns_statuscode_404_if_no_recipes(self):
@@ -35,8 +35,8 @@ class RecipeCategoryTest(RecipeTestBase):
             reverse(
                 'recipes:category',
                 kwargs={'category_id': 1}
-                )
             )
+        )
         content = response.content.decode('utf-8')
 
         # checando se ela existe
@@ -50,8 +50,8 @@ class RecipeCategoryTest(RecipeTestBase):
             reverse(
                 'recipes:category',
                 kwargs={'category_id': recipe.category.id}
-                )
             )
+        )
 
         self.assertEqual(response.status_code, 404)
 

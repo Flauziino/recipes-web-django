@@ -13,7 +13,7 @@ class RecipeSearchTest(RecipeTestBase):
             )
         )
         self.assertIs(
-            view.func, views.search
+            view.func.view_class, views.RecipeListSearchView
         )
 
     def test_recipes_search_loads_correct_template(self):
@@ -34,15 +34,11 @@ class RecipeSearchTest(RecipeTestBase):
         )
         self.assertEqual(response.status_code, 404)
 
-    def test_recipes_search_term_in_on_page_title_and_escaped(self):
-        response = self.client.get(
-            reverse(
-                'recipes:search',
-            ) + '?q=<script>test</script>'
-        )
-
+    def test_recipe_search_term_is_on_page_title_and_escaped(self):
+        url = reverse('recipes:search') + '?q=<Teste>'
+        response = self.client.get(url)
         self.assertIn(
-            'Search for &lt;script&gt;test&lt;/script&gt;',
+            'Search for &lt;Teste&gt;',
             response.content.decode('utf-8')
         )
 
@@ -63,13 +59,13 @@ class RecipeSearchTest(RecipeTestBase):
         )
         response = self.client.get(
             reverse('recipes:search') + f'?q={title}'
-            )
+        )
         a_response = self.client.get(
             reverse('recipes:search') + f'?q={a_title}'
-            )
+        )
         response_both = self.client.get(
             reverse('recipes:search',) + '?q=This'
-            )
+        )
 
         self.assertIn(recipe, response.context['receitas'])
         self.assertNotIn(a_recipe, response.context['receitas'])

@@ -13,7 +13,7 @@ class RecipeIndexTest(RecipeTestBase):
                 'recipes:index'
             )
         )
-        self.assertIs(view.func, views.index)
+        self.assertIs(view.func.view_class, views.RecipeListIndexView)
 
     # teste do status code(index.view)
     def test_recipes_index_view_returns_statuscode_200_OK(self):
@@ -35,7 +35,7 @@ class RecipeIndexTest(RecipeTestBase):
 
         self.assertTemplateUsed(
             response, 'recipes/index.html'
-            )
+        )
 
     # teste se no template renderizado pela view index tem:
     # "No momento não tem-se receitas" caso nao tenha receita na pagina
@@ -57,8 +57,8 @@ class RecipeIndexTest(RecipeTestBase):
         response = self.client.get(
             reverse(
                 'recipes:index'
-                )
             )
+        )
         content = response.content.decode('utf-8')
         response_context_recipes = response.context['receitas']
 
@@ -73,8 +73,8 @@ class RecipeIndexTest(RecipeTestBase):
         response = self.client.get(
             reverse(
                 'recipes:index'
-                )
             )
+        )
 
         # checando se ela existe
         self.assertIn(
