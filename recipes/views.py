@@ -3,8 +3,7 @@ from dotenv import load_dotenv
 
 from django.db.models import Q
 from django.http import Http404
-from django.views.generic import ListView
-from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView
 
 from . import models
 from utils.pagination import make_pagination
@@ -75,24 +74,24 @@ class RecipeListCategoryView(RecipeListBaseListView):
         return ctx
 
 
-def recipe(request, id):
+class RecipeDetailView(DetailView):
+    model = models.Recipe
+    context_object_name = 'receita'
+    template_name = 'recipes/recipe-view.html'
 
-    receita = get_object_or_404(
-        models.Recipe,
-        id=id,
-        is_published=True
-    )
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        qs = qs.filter(
+            is_published=True
+        )
+        return qs
 
-    contexto = {
-        'receita': receita,
-        'is_detail_page': True,
-    }
-
-    return render(
-        request,
-        'recipes/recipe-view.html',
-        contexto
-    )
+    def get_context_data(self, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
+        ctx.update({
+            'is_detail_page': True,
+        })
+        return ctx
 
 
 class RecipeListSearchView(RecipeListBaseListView):

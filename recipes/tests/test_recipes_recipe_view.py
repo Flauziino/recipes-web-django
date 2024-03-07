@@ -9,16 +9,16 @@ class RecipesRecipeTest(RecipeTestBase):
         view = resolve(
             reverse(
                 'recipes:recipe',
-                kwargs={'id': 1}
+                kwargs={'pk': 1}
             )
         )
-        self.assertIs(view.func, views.recipe)
+        self.assertIs(view.func.view_class, views.RecipeDetailView)
 
     def test_recipes_recipe_view_detail_returns_statuscode_404_(self):  # noqa: E501
         response = self.client.get(
             reverse(
                 'recipes:recipe',
-                kwargs={'id': 10000}
+                kwargs={'pk': 10000}
             )
         )
 
@@ -32,9 +32,9 @@ class RecipesRecipeTest(RecipeTestBase):
         response = self.client.get(
             reverse(
                 'recipes:recipe',
-                kwargs={'id': 1}
-                )
+                kwargs={'pk': 1}
             )
+        )
         content = response.content.decode('utf-8')
 
         # checando se ela existe
@@ -47,8 +47,8 @@ class RecipesRecipeTest(RecipeTestBase):
         response = self.client.get(
             reverse(
                 'recipes:recipe',
-                kwargs={'id': recipe.id}
-                )
+                kwargs={'pk': recipe.pk}
             )
+        )
 
         self.assertEqual(response.status_code, 404)

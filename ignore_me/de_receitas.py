@@ -61,6 +61,27 @@ def category(request, category_id):
     )
 
 
+# FUNCBASEBIEW PARA DETALHE DA RECEITA
+def recipe(request, id):
+
+    receita = get_object_or_404(
+        models.Recipe,
+        id=id,
+        is_published=True
+    )
+
+    contexto = {
+        'receita': receita,
+        'is_detail_page': True,
+    }
+
+    return render(
+        request,
+        'recipes/recipe-view.html',
+        contexto
+    )
+
+
 # FUNCBASEVIEW PARA PESQUISA DE RECEITAS
 def search(request):
     search_term = request.GET.get('q', '').strip()
