@@ -228,18 +228,20 @@ class DashboardRecipeEdit(View):
     name='dispatch'
 )
 class DashboardRecipeCreate(View):
-    def get(self, request):
-        form = AuthorRecipeForm()
-
+    def render_form(self, form):
         contexto = {
             'form': form,
         }
 
         return render(
-            request,
+            self.request,
             'author/dashboard_new_recipe.html',
             contexto
         )
+
+    def get(self, request):
+        form = AuthorRecipeForm()
+        return self.render_form(form)
 
     def post(self, request):
         form = AuthorRecipeForm(
@@ -272,6 +274,12 @@ class DashboardRecipeCreate(View):
             )
 
             return redirect('authors:dashboard')
+
+        messages.error(
+            request, 'Existem erros em seu formulário!'
+        )
+
+        return self.render_form(form)
 
 
 @method_decorator(

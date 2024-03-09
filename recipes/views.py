@@ -66,7 +66,6 @@ class RecipeListCategoryView(RecipeListBaseListView):
 
         for receita in self.receitas:
             category_name = receita.category.name
-            break
 
         ctx.update({
             'title': f'{category_name}  - Category | ',
