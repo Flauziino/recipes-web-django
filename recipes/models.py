@@ -114,7 +114,7 @@ class Recipe(models.Model):
 
     def get_absolute_url(self):
         return reverse(
-            'recipes:recipe', args=(self.id,)
+            'recipes:recipe', kwargs={'pk': self.id}
         )
 
     def save(self, *args, **kwargs):

@@ -1,6 +1,13 @@
-from .test_recipes_base import RecipeTestBase, Recipe
+import io
+
+from PIL import Image
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ValidationError
+
 from parameterized import parameterized
+
+from .test_recipes_base import RecipeTestBase, Recipe
 
 
 class RecipeModelsTest(RecipeTestBase):
@@ -27,11 +34,11 @@ class RecipeModelsTest(RecipeTestBase):
         return recipe
 
     @parameterized.expand([
-            ('title', 65),
-            ('description', 255),
-            ('preparation_time_unit', 65),
-            ('servings_unit', 65),
-        ])
+        ('title', 65),
+        ('description', 255),
+        ('preparation_time_unit', 65),
+        ('servings_unit', 65),
+    ])
     def test_recipe_fields_max_length(self, field, max_length):
         setattr(
             self.recipe, field,
@@ -78,3 +85,34 @@ class RecipeModelsTest(RecipeTestBase):
         self.assertEqual(
             str(category), 'TESTEE'
         )
+
+    def test_get_absolute_url_return_right(self):
+        self.recipe
+        url = self.recipe.get_absolute_url()
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_save_method_cover_changed(self):
+        image = Image.new("RGB", (100, 100), "white")
+        image_bytes_io = io.BytesIO()
+        image.save(image_bytes_io, format="JPEG")
+
+        new_cover = SimpleUploadedFile(
+            "new_cover.jpg",
+            image_bytes_io.getvalue(),
+            content_type="image/jpeg"
+        )
+        receita = Recipe(
+            title='liltest',
+            slug='tes-lil',
+            preparation_time=1,
+            servings=1
+        )
+        receita.save()
+        receita.cover = new_cover
+        receita.save()
+
+        self.assertTrue(getattr(
+            receita, 'cover_changed', True
+        ))
