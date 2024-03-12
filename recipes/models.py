@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 from django.urls import reverse
 from django.contrib.auth.models import User
 
@@ -6,6 +7,8 @@ from tag.models import Tag
 
 from utils.imagem import resize_image
 from utils.slug import new_slug
+
+from collections import defaultdict
 
 
 class Category(models.Model):
@@ -136,3 +139,18 @@ class Recipe(models.Model):
             resize_image(self.cover, 468, 360, True, 70)
 
         return super_save
+
+    def clean(self, *args, **kwargs):
+        error_messages = defaultdict(list)
+        recipe_from_db = Recipe.objects.filter(
+            title__iexact=self.title
+        ).first()
+
+        if recipe_from_db:
+            if recipe_from_db.pk != self.pk:
+                error_messages['title'].append(
+                    'Ja existe uma receita com esse titulo!'
+                )
+
+        if error_messages:
+            raise ValidationError(error_messages)

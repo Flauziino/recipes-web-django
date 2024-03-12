@@ -5,11 +5,8 @@
     Você pode
     <a href="{% url "authors:dashboard" %}">ver suas receitas</a>,
     <a href="{% url "authors:dashboard_create" %}">criar suas receitas</a> ou
-    <form class="inline-form" action="{% url 'authors:logout' %}" method='POST'>
-        {% csrf_token %}
-        <input type="hidden" name="username" value="{{ request.user.username }}">
-        <button class="plaintext-button" type="submit">clicar aqui</button>
-    </form> para sair.
+    {% include "author/partials/_form_logout.html" %}
+    <a class="authors-logout-link" href="#">clique aqui</a> para sair.
     </div>
 
 {% endif %}
