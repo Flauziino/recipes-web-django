@@ -1,14 +1,16 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404
-from django.contrib import messages
-from django.urls import reverse
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.views import View
+from django.http import Http404
+from django.urls import reverse
+from django.contrib import messages
+from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import RegisterForm, LoginForm, AuthorRecipeForm
+from .models import Profile
 from recipes.models import Recipe
+from .forms import RegisterForm, LoginForm, AuthorRecipeForm
 
 
 def register_view(request):
@@ -298,3 +300,22 @@ class DashboardRecipeDelete(DashboardRecipeEdit):
         return redirect(
             reverse('authors:dashboard')
         )
+
+
+class ProfileView(TemplateView):
+    template_name = 'author/profile.html'
+
+    def get(self, request, *args, **kwargs):
+        ctx = self.get_context_data(**kwargs)
+        profile_id = ctx.get('id')
+        profile = get_object_or_404(
+            Profile.objects.filter(
+                pk=profile_id
+            ).select_related('author'),
+            pk=profile_id
+        )
+
+        return self.render_to_response({
+            **ctx,
+            'perfil': profile,
+        })

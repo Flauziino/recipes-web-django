@@ -33,4 +33,11 @@ urlpatterns = [
         name='dashboard_edit'
     ),
 
+    # profile
+    path(
+        'profile/<int:id>/',
+        views.ProfileView.as_view(),
+        name='profile'
+    ),
+
 ]

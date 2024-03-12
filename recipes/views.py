@@ -30,7 +30,7 @@ class RecipeListBaseListView(ListView):
         qs = qs.filter(
             is_published=True
         )
-        qs = qs.select_related('author', 'category')
+        qs = qs.select_related('author', 'category', 'author__profile')
         qs = qs.prefetch_related('tags')
 
         return qs
