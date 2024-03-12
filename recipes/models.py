@@ -1,9 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.urls import reverse
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.auth.models import User
 
 from utils.imagem import resize_image
 from utils.slug import new_slug
+
+from tag.models import Tag
 
 
 class Category(models.Model):
@@ -107,6 +110,11 @@ class Recipe(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='Autor'
+    )
+
+    tags = GenericRelation(
+        Tag,
+        related_query_name='recipes'
     )
 
     def __str__(self):
