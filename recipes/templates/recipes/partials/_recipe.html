@@ -77,6 +77,17 @@
             {% else %}
                 {{ receita.preparation_steps|linebreaksbr }}
             {% endif %}
+
+            {% if receita.tags.all %}
+                <p>
+                    Tags:
+                    {% for tag in receita.tags.all %}
+                        <a href="{% url 'recipes:tag' tag.slug %}">
+                            {{ tag.name }}
+                        </a>, 
+                    {% endfor %}
+                </p>
+            {% endif %}
         </div>
     {% endif %}
 

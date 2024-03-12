@@ -9,6 +9,7 @@ from django.views.generic import ListView, DetailView
 
 
 from . import models
+from tag.models import Tag
 from utils.pagination import make_pagination
 
 
@@ -30,6 +31,7 @@ class RecipeListBaseListView(ListView):
             is_published=True
         )
         qs = qs.select_related('author', 'category')
+        qs = qs.prefetch_related('tags')
 
         return qs
 
@@ -87,6 +89,31 @@ class RecipeListCategoryView(RecipeListBaseListView):
 
         ctx.update({
             'title': f'{category_name}  - Category | ',
+        })
+        return ctx
+
+
+class RecipeListTagView(RecipeListBaseListView):
+    template_name = 'recipes/tag.html'
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        qs = qs.filter(
+            tags__slug=self.kwargs.get('slug', '')
+        )
+        return qs
+
+    def get_context_data(self, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
+        tag_name = Tag.objects.filter(
+            slug=self.kwargs.get('slug', '')
+        ).first()
+
+        if not tag_name:
+            tag_name = 'Sem receitas'
+
+        ctx.update({
+            'page_title': f'{tag_name}  - Tag | ',
         })
         return ctx
 
