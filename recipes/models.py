@@ -1,12 +1,11 @@
 from django.db import models
 from django.urls import reverse
-from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import User
+
+from tag.models import Tag
 
 from utils.imagem import resize_image
 from utils.slug import new_slug
-
-from tag.models import Tag
 
 
 class Category(models.Model):
@@ -112,10 +111,7 @@ class Recipe(models.Model):
         verbose_name='Autor'
     )
 
-    tags = GenericRelation(
-        Tag,
-        related_query_name='recipes'
-    )
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.title
