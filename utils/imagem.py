@@ -10,7 +10,7 @@ def resize_image(
         new_height=300,
         optimize=True,
         quality=60
-        ):
+):
 
     image_path = Path(settings.MEDIA_ROOT / image_django.name).resolve()
     image_pillow = Image.open(image_path)
