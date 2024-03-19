@@ -219,3 +219,24 @@ class AuthorClassViewTest(TestCase, RecipeMixin):
         # Verificar que a receita foi excluída do banco de dados
         with self.assertRaises(Recipe.DoesNotExist):
             Recipe.objects.get(pk=self.recipe.id)
+
+    def test_profile_view_loads_correct_template(self):  # noqa: E501
+        # criando autor pois ao criar um autor cria automaticamente seu perfil
+        author = self.make_author({'username': 'user'})
+
+        response = self.client.get(
+            reverse(
+                'authors:profile', kwargs={'id': author.id}
+            )
+        )
+
+        # testando se foi utilizado o template correto
+        self.assertTemplateUsed(
+            response, 'author/profile.html'
+        )
+
+        # testando se nossa resposta contem o autor.username criado
+        self.assertContains(
+            response,
+            author.username
+        )

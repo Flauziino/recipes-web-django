@@ -308,10 +308,9 @@ class ProfileView(TemplateView):
     def get(self, request, *args, **kwargs):
         ctx = self.get_context_data(**kwargs)
         profile_id = ctx.get('id')
+
         profile = get_object_or_404(
-            Profile.objects.filter(
-                pk=profile_id
-            ).select_related('author'),
+            Profile.objects.filter(pk=profile_id).select_related('author'),
             pk=profile_id
         )
 
